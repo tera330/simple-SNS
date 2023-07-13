@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.example.firebaseimageandtextsample.databinding.FragmentCreatePostBinding
 import com.example.firebaseimageandtextsample.firebase.FireStore
 import com.example.firebaseimageandtextsample.firebase.FirebaseStorage
+import com.example.firebaseimageandtextsample.firebase.imageRef
 
 class CreatePostFragment : Fragment() {
     private var _binding: FragmentCreatePostBinding? = null
@@ -37,7 +38,10 @@ class CreatePostFragment : Fragment() {
             // todo nullを許容させない
             fireStore.post(title, body)
 
-
+            if (imageUri != null) {
+                storage.uploadImageToFirebaseStorage(imageUri!!, imageRef.toString())
+                imageUri = null
+            }
         }
 
         binding.insertImage.setOnClickListener {
@@ -63,9 +67,7 @@ class CreatePostFragment : Fragment() {
             READ_REQUEST_CODE -> {
                 try {
                     resultData?.data?.also { uri ->
-                        if (uri != null) {
-                            imageUri = uri // 画像のURI取得
-                        }
+                        imageUri = uri // 画像のURI取得
                     }
                 } catch (e: Exception) {
                 }

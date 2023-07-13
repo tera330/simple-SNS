@@ -1,13 +1,16 @@
 package com.example.firebaseimageandtextsample.firebase
 
-import android.util.Log
 import com.example.firebaseimageandtextsample.ItemListAdapter
 import com.example.firebaseimageandtextsample.data.Post
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+
+var imageRef: String? = null
+var image: StorageReference? = null
 
 class FireStore {
     private val db = Firebase.firestore
@@ -21,8 +24,6 @@ class FireStore {
 
     // プロフィールの作成
     fun createProfile(macAddress: String, name: String, introduction: String) {
-        Log.d("createProfile", userRef.toString())
-        Log.d("createProfile", uid.toString())
         userRef
             .set(mapOf(
                 "macAddress" to macAddress,
@@ -36,7 +37,8 @@ class FireStore {
     // 投稿
     fun post(title: String, body: String) {
         val postRef = userRef.collection("post").document() // ドキュメントIDを自動生成
-            .set(mapOf(
+            imageRef = postRef.id
+            postRef.set(mapOf(
                 "title" to title,
                 "body" to body,
                 //"author" to userRef,
@@ -44,7 +46,6 @@ class FireStore {
                 //"updateTime" to FieldValue.serverTimestamp(),
                 "likeCount" to 0 // いいねされた数
             ))
-        val imageRef = postRef.toString()
     }
 
     // todo 自分がいいねを押したさいに、usersドキュメント以下にlikedPostsを作成
@@ -79,28 +80,37 @@ class FireStore {
             .addSnapshotListener { snapshot, e -> // users
                 for (userDocument in snapshot!!.documents) {
                     val address = userDocument.getString("macAddress")
-                        if (addressList.contains(address!!)) {
-                            val matchUid = userDocument.id
-                            val postRef = userDocumentRef.document(matchUid).collection("post")
-                            postRef
-                                .get()
-                                .addOnSuccessListener { querySnapshot ->
-                                    for (documentSnapshot in querySnapshot.documents) {
-                                        val title = documentSnapshot.getString("title")
-                                        val body = documentSnapshot.getString("body")
+                    if (addressList.contains(address!!)) {
+                        val matchUid = userDocument.id
+                        val postRef = userDocumentRef.document(matchUid).collection("post")
 
-                                        val userPost = Post(
-                                            title = title!!,
-                                            body = body!!,
-                                            likeCount = 0
-                                        )
-                                        if (!postList.contains(userPost)) {
-                                            postList.add(userPost)
-                                        }
+                        postRef
+                            .get()
+                            .addOnSuccessListener { querySnapshot ->
+                                for (documentSnapshot in querySnapshot.documents) {
+                                    val id = documentSnapshot.id
+                                    val title = documentSnapshot.getString("title")
+                                    val body = documentSnapshot.getString("body")
+                                    /*if (imageRef != null) {
+                                        image = storageRef.child(imageRef!!)
+                                        imageRef = null
                                     }
-                                    itemListAdapter.submitList(postList)
+
+                                     */
+                                    val userPost = Post(
+                                        title = title!!,
+                                        body = body!!,
+                                        likeCount = 0,
+                                        image = storageRef.child(id)
+                                    )
+
+                                    if (!postList.contains(userPost)) {
+                                        postList.add(userPost)
+                                    }
                                 }
-                        }
+                                itemListAdapter.submitList(postList)
+                            }
+                    }
                 }
             }
     }

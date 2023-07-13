@@ -1,5 +1,6 @@
 package com.example.firebaseimageandtextsample
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -35,13 +36,11 @@ class ItemListAdapter : ListAdapter<Post, ItemListAdapter.ItemViewHolder>(DiffCa
             //binding.time.text = post.createTime.toString()
             binding.title.text = post.title
             binding.body.text = post.body
-            /*post.image?.getBytes(1024 * 1024)
+            post.image?.getBytes(1024 * 1024)
                 ?.addOnSuccessListener { imageData ->
                     val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
                     binding.image.setImageBitmap(bitmap)
                 }
-
-             */
             binding.likeCount.text = post.likeCount.toString()
 
         }
