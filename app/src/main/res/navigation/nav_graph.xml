@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/initialFragment">
+    <fragment
+        android:id="@+id/initialFragment"
+        android:name="com.example.firebaseimageandtextsample.fragment.InitialFragment"
+        android:label="fragment_initial"
+        tools:layout="@layout/fragment_initial" >
+        <action
+            android:id="@+id/action_initialFragment_to_createProfileFragment"
+            app:destination="@id/createProfileFragment" />
+        <action
+            android:id="@+id/action_initialFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createProfileFragment"
+        android:name="com.example.firebaseimageandtextsample.fragment.CreateProfileFragment"
+        android:label="fragment_create_profile"
+        tools:layout="@layout/fragment_create_profile" >
+        <action
+            android:id="@+id/action_createProfileFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="com.example.firebaseimageandtextsample.fragment.CreatePostFragment"
+        android:label="fragment_create_post"
+        tools:layout="@layout/fragment_create_post" />
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.firebaseimageandtextsample.fragment.ListFragment"
+        android:label="fragment_list"
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_createPostFragment"
+            app:destination="@id/createPostFragment" />
+    </fragment>
+</navigation>
