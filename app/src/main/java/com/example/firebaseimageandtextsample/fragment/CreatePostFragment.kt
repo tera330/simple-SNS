@@ -32,11 +32,10 @@ class CreatePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.postButton.setOnClickListener {
-            val title = binding.createTitle.text.toString()
             val body = binding.createBody.text.toString()
 
             // todo nullを許容させない
-            fireStore.post(title, body)
+            fireStore.post(body)
 
             if (imageUri != null) {
                 storage.uploadImageToFirebaseStorage(imageUri!!, imageRef.toString())

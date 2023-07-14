@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.firebaseimageandtextsample.data.Post
 import com.example.firebaseimageandtextsample.databinding.ProfileItemBinding
+import com.example.firebaseimageandtextsample.firebase.FireStore
 
 class ItemListAdapter : ListAdapter<Post, ItemListAdapter.ItemViewHolder>(DiffCallback) {
 
@@ -31,10 +32,10 @@ class ItemListAdapter : ListAdapter<Post, ItemListAdapter.ItemViewHolder>(DiffCa
     class ItemViewHolder(private val binding: ProfileItemBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
+        private val fireStore = FireStore()
+
         fun bind(post: Post) {
-            //binding.author.text = post.author.toString()
-            //binding.time.text = post.createTime.toString()
-            binding.title.text = post.title
+            binding.author.text = post.author
             binding.body.text = post.body
             post.image?.getBytes(1024 * 1024)
                 ?.addOnSuccessListener { imageData ->
@@ -42,19 +43,15 @@ class ItemListAdapter : ListAdapter<Post, ItemListAdapter.ItemViewHolder>(DiffCa
                     binding.image.setImageBitmap(bitmap)
                 }
             binding.likeCount.text = post.likeCount.toString()
+            // binding.time.text = post.createTime.toString()
 
+            binding.likeButton.setOnClickListener {
+                val uid = post.uid
+                val postId = post.postId
+                fireStore.addLikedUserToPost(uid, postId)
+            }
         }
-
-            /*
-            val MAX_SIZE_BYTES: Long = 1024 * 1024
-            profile.Image?.getBytes(MAX_SIZE_BYTES)
-                ?.addOnSuccessListener { imageData ->
-                    val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-                    binding.userImage.setImageBitmap(bitmap).toString()
-                    }
-
-             */
-        }
+    }
 
     companion object {
         private val DiffCallback = object: DiffUtil.ItemCallback<Post>() {
@@ -63,7 +60,8 @@ class ItemListAdapter : ListAdapter<Post, ItemListAdapter.ItemViewHolder>(DiffCa
             }
 
             override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
-                return oldItem.title == newItem.title
+                return oldItem.author == newItem.author
+
             }
         }
     }
